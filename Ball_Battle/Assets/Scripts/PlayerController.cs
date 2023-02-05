@@ -8,16 +8,41 @@ public class PlayerController : MonoBehaviour
     public GameObject focalPoint;
     public bool hasPowerup;
     public GameObject powerUpIndicator;
+    public GameObject gameOver;
+    public GameObject spanw;
+    SpawnManager spanwScript;
     // Start is called before the first frame update
     void Start()
     {
         playerRb = GetComponent<Rigidbody>();
         focalPoint = GameObject.Find("Focal Point");
+        spanwScript = spanw.GetComponent<SpawnManager>();
     }
 
-    // Update is called once per frame
+    public void ResetScene()
+    {
+        Time.timeScale = 1;
+        spanwScript.waveNumber = 0;
+        spanwScript.enemyCount = 0;
+        GameObject enemy = GameObject.FindGameObjectWithTag("Enemy");
+        GameObject powerUp = GameObject.FindGameObjectWithTag("PowerUp");
+        if (enemy != null)
+            Destroy(enemy.gameObject);
+
+        if (powerUp != null)
+            Destroy(powerUp.gameObject);
+        playerRb.AddForce(transform.position - transform.position * 1.3f, ForceMode.Impulse);
+        gameOver.gameObject.SetActive(false);
+        transform.position = new Vector3(0, 0, 0);
+    }
     void Update()
     {
+        if (transform.position.y <= -16)
+        {
+            Time.timeScale = 0;
+            gameOver.gameObject.SetActive(true);
+        }
+
         float forwardInput = Input.GetAxis("Vertical");
         powerUpIndicator.transform.position = transform.position - new Vector3(0, 0.5f, 0);
         playerRb.AddForce(forwardInput * speed * focalPoint.transform.forward);
