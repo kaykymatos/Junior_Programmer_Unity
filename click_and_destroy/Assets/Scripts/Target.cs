@@ -1,16 +1,13 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Target : MonoBehaviour
 {
     private Rigidbody targetRg;
-    private float minSpeed = 12;
-    private float maxSpeed = 16;
-    private float torque = 100;
-    private float xRange = 4;
-    private float ySpawnPos = -6;
+    private readonly float minSpeed = 12;
+    private readonly float maxSpeed = 16;
+    private readonly float torque = 100;
+    private readonly float xRange = 4;
+    private readonly float ySpawnPos = -6;
     private GameManager gameManager;
     public int pointValue;
     public ParticleSystem explosionParticle;
@@ -24,23 +21,24 @@ public class Target : MonoBehaviour
         gameManager = GameObject.FindGameObjectWithTag("Game Manager")
             .GetComponent<GameManager>();
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
     private void OnMouseDown()
     {
-        Destroy(gameObject);
-        Instantiate(explosionParticle,
-            transform.position,
-            explosionParticle.transform.rotation);
-        gameManager.UpdateScore(pointValue);
+        if (gameManager.isGameActive)
+        {
+            Destroy(gameObject);
+            Instantiate(explosionParticle,
+                transform.position,
+                explosionParticle.transform.rotation);
+            gameManager.UpdateScore(pointValue);
+        }
     }
     private void OnTriggerEnter(Collider other)
     {
+        if (!gameObject.CompareTag("Bad"))
+            gameManager.GameOver();
+
         Destroy(gameObject);
+
     }
     Vector3 RandomForce()
     {
